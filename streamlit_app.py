@@ -17,7 +17,7 @@ def main():
     st.title("EconGPT Chat")
 
     # Create a layout with two columns
-    col1, col2 = st.columns([4, 1])
+    col1, col2 = st.rows([4, 1])
 
     # Create empty container for chat messages
     messages_container = col1.empty()
