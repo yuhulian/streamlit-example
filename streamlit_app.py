@@ -4,6 +4,8 @@ import math
 import pandas as pd
 import numpy as np
 import streamlit as st
+import cv2
+import matplotlib.pyplot as plt
 
 """
 # Welcome to Streamlit!
@@ -16,55 +18,39 @@ forums](https://discuss.streamlit.io).
 In the meantime, below is an example of what you can do with just a few lines of code:
 """
 
-def plot_normal_distribution(mean, variance):
-    x = np.linspace(-10, 10, 500)
-    y = (1 / np.sqrt(2 * np.pi * variance)) * np.exp(-(x - mean)**2 / (2 * variance))
+def grayscale(image):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    return gray
 
-    df = pd.DataFrame({"x": x, "y": y})
-
-    chart = alt.Chart(df).mark_line().encode(
-        x='x',
-        y='y'
-    ).properties(
-        width=300,
-        height=300
-    )
-
-    return chart
-
-def plot_hyperbolic_function(a, b):
-    x = np.linspace(-10*a, 10*a, 500)
-    y = b * np.sqrt(1 + (x**2 / a**2))
-
-    df = pd.DataFrame({"x": x, "y": y})
-
-    chart = alt.Chart(df).mark_line().encode(
-        x='x',
-        y='y'
-    ).properties(
-        width=300,
-        height=300
-    )
-
-    return chart
+def laplacian_transform(image, laplacian_ksize):
+    laplacian = cv2.Laplacian(image, cv2.CV_64F, ksize=laplacian_ksize)
+    return laplacian
 
 # Streamlit 应用程序
-st.title("Distribution Visualization")
+st.title("Image Processing")
 
-# 调节正态分布函数的均值和方差
-mean = st.slider("Mean", -5.0, 5.0, 0.0, 0.1)
-variance = st.slider("Variance", 0.1, 5.0, 1.0, 0.1)
+# 上传图像文件
+uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
 
-# 绘制正态分布函数
-st.subheader("Normal Distribution")
-normal_chart = plot_normal_distribution(mean, variance)
-st.altair_chart(normal_chart)
+if uploaded_file is not None:
+    # 读取上传的图像文件
+    image = cv2.imdecode(np.frombuffer(uploaded_file.read(), np.uint8), 1)
 
-# 调节双曲线函数的参数
-a = st.slider("Parameter a", 0.1, 5.0, 1.0, 0.1)
-b = st.slider("Parameter b", 0.1, 5.0, 1.0, 0.1)
+    # 灰度化
+    gray_image = grayscale(image)
 
-# 绘制双曲线函数
-st.subheader("Hyperbolic Function")
-hyperbolic_chart = plot_hyperbolic_function(a, b)
-st.altair_chart(hyperbolic_chart)
+    # 调节拉普拉斯变换的参数
+    laplacian_ksize = st.slider("Laplacian Kernel Size", 3, 15, 3)
+
+    # 拉普拉斯变换
+    laplacian_image = laplacian_transform(gray_image, laplacian_ksize)
+
+    # 显示原始图像和处理后的图像
+    st.subheader("Original Image")
+    st.image(image, channels="BGR")
+
+    st.subheader("Grayscale Image")
+    st.image(gray_image, cmap="gray")
+
+    st.subheader("Laplacian Transformed Image")
+    st.image(laplacian_image, cmap="gray")
