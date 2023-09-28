@@ -1,56 +1,41 @@
-from collections import namedtuple
-import altair as alt
-import math
-import pandas as pd
-import numpy as np
 import streamlit as st
-import cv2
-import matplotlib.pyplot as plt
+import requests
 
-"""
-# Welcome to Streamlit!
+API_ENDPOINT = "http://192.170.12.80:5002/econservice"
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:
 
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+def send_request(messages):
+    response = requests.post(API_ENDPOINT, json=messages)
+    if response.status_code == 200:
+        data = response.json()
+        return data["response"]
+    else:
+        return "Error: Failed to fetch response"
 
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
 
-def grayscale(image):
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    return gray
+def main():
+    st.title("EconGPT Chat")
 
-def laplacian_transform(image, laplacian_ksize):
-    laplacian = cv2.Laplacian(image, cv2.CV_64F, ksize=laplacian_ksize)
-    return laplacian
+    messages = []
+    user_input = ""
 
-# Streamlit 应用程序
-st.title("Image Processing")
+    while True:
+        user_input = st.text_input("User:", value=user_input, key="user_input")
+        if st.button("Send"):
+            if user_input:
+                messages.append({"role": "user", "content": user_input})
+                response = send_request(messages)
+                messages.append({"role": "EconGPT", "content": response})
+                user_input = ""
 
-# 上传图像文件
-uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
+        st.text_area("Conversation", value="\n".join(
+            [f"{msg['role']}: {msg['content']}" for msg in messages]
+        ))
 
-if uploaded_file is not None:
-    # 读取上传的图像文件
-    image = cv2.imdecode(np.frombuffer(uploaded_file.read(), np.uint8), 1)
+        if st.button("Clear Conversation"):
+            messages = []
+            user_input = ""
 
-    # 灰度化
-    gray_image = grayscale(image)
 
-    # 调节拉普拉斯变换的参数
-    laplacian_ksize = st.slider("Laplacian Kernel Size", 3, 15, 3)
-
-    # 拉普拉斯变换
-    laplacian_image = laplacian_transform(gray_image, laplacian_ksize)
-
-    # 显示原始图像和处理后的图像
-    st.subheader("Original Image")
-    st.image(image, channels="BGR")
-
-    st.subheader("Grayscale Image")
-    st.image(gray_image, cmap="gray")
-
-    st.subheader("Laplacian Transformed Image")
-    st.image(laplacian_image, cmap="gray")
+if __name__ == "__main__":
+    main()
