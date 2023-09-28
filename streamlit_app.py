@@ -33,8 +33,8 @@ def plot_normal_distribution(mean, variance):
     return chart
 
 def plot_hyperbolic_function(a, b):
-    x = np.linspace(-10, 10, 500)
-    y = a / x + b
+    x = np.linspace(-10*a, 10*a, 500)
+    y = b * np.sqrt(1 + (x**2 / a**2))
 
     df = pd.DataFrame({"x": x, "y": y})
 
@@ -61,8 +61,8 @@ normal_chart = plot_normal_distribution(mean, variance)
 st.altair_chart(normal_chart)
 
 # 调节双曲线函数的参数
-a = st.slider("Parameter a", -5.0, 5.0, 1.0, 0.1)
-b = st.slider("Parameter b", -5.0, 5.0, 0.0, 0.1)
+a = st.slider("Parameter a", 0.1, 5.0, 1.0, 0.1)
+b = st.slider("Parameter b", 0.1, 5.0, 1.0, 0.1)
 
 # 绘制双曲线函数
 st.subheader("Hyperbolic Function")
