@@ -26,19 +26,45 @@ def plot_normal_distribution(mean, variance):
         x='x',
         y='y'
     ).properties(
-        width=500,
+        width=300,
         height=300
     )
 
-    st.altair_chart(chart)
+    return chart
+
+def plot_hyperbolic_function(a, b):
+    x = np.linspace(-10, 10, 500)
+    y = a / x + b
+
+    df = pd.DataFrame({"x": x, "y": y})
+
+    chart = alt.Chart(df).mark_line().encode(
+        x='x',
+        y='y'
+    ).properties(
+        width=300,
+        height=300
+    )
+
+    return chart
 
 # Streamlit 应用程序
-st.title("Normal Distribution Visualization")
+st.title("Distribution Visualization")
 
-# 调节均值和方差
+# 调节正态分布函数的均值和方差
 mean = st.slider("Mean", -5.0, 5.0, 0.0, 0.1)
 variance = st.slider("Variance", 0.1, 5.0, 1.0, 0.1)
 
 # 绘制正态分布函数
 st.subheader("Normal Distribution")
-plot_normal_distribution(mean, variance)
+normal_chart = plot_normal_distribution(mean, variance)
+st.altair_chart(normal_chart)
+
+# 调节双曲线函数的参数
+a = st.slider("Parameter a", -5.0, 5.0, 1.0, 0.1)
+b = st.slider("Parameter b", -5.0, 5.0, 0.0, 0.1)
+
+# 绘制双曲线函数
+st.subheader("Hyperbolic Function")
+hyperbolic_chart = plot_hyperbolic_function(a, b)
+st.altair_chart(hyperbolic_chart)
