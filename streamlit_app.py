@@ -16,37 +16,29 @@ forums](https://discuss.streamlit.io).
 In the meantime, below is an example of what you can do with just a few lines of code:
 """
 
-def plot_fourier_transform(signal):
-    # 进行傅里叶变换
-    fft_result = np.fft.fft(signal)
-    freq = np.fft.fftfreq(len(signal))
+def plot_normal_distribution(mean, variance):
+    x = np.linspace(-10, 10, 500)
+    y = (1 / np.sqrt(2 * np.pi * variance)) * np.exp(-(x - mean)**2 / (2 * variance))
 
-    # 创建频谱数据框
-    df = pd.DataFrame({"Frequency": freq, "Magnitude": np.abs(fft_result)})
+    df = pd.DataFrame({"x": x, "y": y})
 
-    # 绘制频谱图
-    chart = alt.Chart(df).mark_circle(color='#0068c9', opacity=0.5).encode(
-        x='Frequency:Q',
-        y='Magnitude:Q'
+    chart = alt.Chart(df).mark_line().encode(
+        x='x',
+        y='y'
     ).properties(
         width=500,
-        height=500
+        height=300
     )
 
     st.altair_chart(chart)
 
 # Streamlit 应用程序
-st.title("Fourier Transform Visualization")
+st.title("Normal Distribution Visualization")
 
-# 生成正弦波信号
-frequency = st.slider("Frequency", 1, 100, 5)  # 频率滑动条
-time = np.linspace(0, 1, 1000)  # 时间范围为 0 到 1，总共 1000 个点
-signal = np.sin(2 * np.pi * frequency * time)  # 正弦波信号
+# 调节均值和方差
+mean = st.slider("Mean", -5.0, 5.0, 0.0, 0.1)
+variance = st.slider("Variance", 0.1, 5.0, 1.0, 0.1)
 
-# 绘制时域信号
-st.subheader("Time Domain Signal")
-st.line_chart(pd.DataFrame({"Time": time, "Amplitude": signal}))
-
-# 绘制频谱
-st.subheader("Frequency Spectrum")
-plot_fourier_transform(signal)
+# 绘制正态分布函数
+st.subheader("Normal Distribution")
+plot_normal_distribution(mean, variance)
