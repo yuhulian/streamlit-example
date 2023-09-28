@@ -16,22 +16,19 @@ def send_request(messages):
 def main():
     st.title("EconGPT Chat")
 
-    # Create conversation window
-    st.markdown(
-        """
-        <div style="width: 80%; height: 400px; overflow-y: scroll; border: 1px solid gray; padding: 10px;">
-            <div id="conversation"></div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    # Create columns for conversation and user input
+    col1, col2 = st.beta_columns([4, 1])
 
-    # Create user input section
-    user_input = st.text_input("User Input")
+    # Create empty container for chat messages
+    messages_container = col1.empty()
 
-    # Create send button
-    send_button_col, _ = st.beta_columns([1, 9])
-    if send_button_col.button("Send"):
+    # Initialize messages list
+    messages = []
+
+    # Get user input
+    user_input = col2.text_input("User Input")
+
+    if col2.button("Send"):
         if user_input:
             messages.append({"role": "user", "content": user_input})
             response = send_request(messages)
@@ -41,9 +38,9 @@ def main():
     # Display chat messages
     for msg in messages:
         if msg["role"] == "user":
-            st.markdown(f"<p style='color: blue;'>User: {msg['content']}</p>", unsafe_allow_html=True)
+            messages_container.text(f"User: {msg['content']}")
         elif msg["role"] == "EconGPT":
-            st.markdown(f"<p style='color: red;'>EconGPT: {msg['content']}</p>", unsafe_allow_html=True)
+            messages_container.text(f"EconGPT: {msg['content']}")
 
     # Add button to clear conversation
     if st.button("Clear Conversation"):
