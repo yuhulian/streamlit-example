@@ -3,7 +3,6 @@ import requests
 
 API_ENDPOINT = "http://192.170.12.80:5002/econservice"
 
-
 def send_request(messages):
     response = requests.post(API_ENDPOINT, json=messages)
     if response.status_code == 200:
