@@ -16,8 +16,8 @@ def send_request(messages):
 def main():
     st.title("EconGPT Chat")
 
-    # Create columns for conversation and user input
-    col1, col2 = st.beta_columns([5, 1])
+    # Create a layout with two columns
+    col1, col2 = st.columns([4, 1])
 
     # Create empty container for chat messages
     messages_container = col1.empty()
