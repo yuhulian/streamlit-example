@@ -17,7 +17,7 @@ def main():
     st.title("EconGPT Chat")
 
     # Create columns for conversation and user input
-    col1, col2 = st.beta_columns([4, 1])
+    col1, col2 = st.beta_columns([5, 1])
 
     # Create empty container for chat messages
     messages_container = col1.empty()
